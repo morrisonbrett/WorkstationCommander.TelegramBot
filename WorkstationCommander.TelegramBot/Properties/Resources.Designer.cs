@@ -80,9 +80,11 @@ namespace WorkstationCommander.TelegramBot.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Workstation: {0}
-        ///Uptime: {1}
-        ///IdleTime: {2}
-        ///Lock Status: {3}.
+        ///Local IP Address: {1}
+        ///Public IP Address: {2}
+        ///Uptime: {3}
+        ///IdleTime: {4}
+        ///Lock Status: {5}.
         /// </summary>
         internal static string Status {
             get {

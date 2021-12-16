@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
@@ -90,7 +92,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
         case "/status":
         {
-            messageResponse = string.Format(Resources.Status, Environment.MachineName, WinSys.GetSystemUpTimeInfo(), WinSys.GetIdleTime(), WinSys.lockState ? "Locked" : "Unlocked");
+            messageResponse = string.Format(Resources.Status, Environment.MachineName, GetLocalIpAddress(), GetPublicIpAddress(), WinSys.GetSystemUpTimeInfo(), WinSys.GetIdleTime(), WinSys.lockState ? "Locked" : "Unlocked");
             break;
         }
 
@@ -129,6 +131,24 @@ Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, Cancell
 string GetAssemblyVersion()
 {
     return Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version.ToString();
+}
+
+// https://stackoverflow.com/a/27376368/3782147
+string GetLocalIpAddress()
+{
+    var localIP = string.Empty;
+    using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+    {
+        socket.Connect("8.8.8.8", 65530);
+        var endPoint = socket.LocalEndPoint as IPEndPoint;
+        localIP = endPoint.Address.ToString();
+    }
+    return localIP;
+}
+
+string GetPublicIpAddress(string serviceUrl = "https://ipinfo.io/ip")
+{
+    return IPAddress.Parse(new WebClient().DownloadString(serviceUrl)).ToString();
 }
 
 #pragma warning restore CS8602 // Dereference of a possibly null reference.

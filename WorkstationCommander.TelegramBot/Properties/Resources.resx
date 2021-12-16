@@ -125,9 +125,11 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>Workstation: {0}
-Uptime: {1}
-IdleTime: {2}
-Lock Status: {3}</value>
+Local IP Address: {1}
+Public IP Address: {2}
+Uptime: {3}
+IdleTime: {4}
+Lock Status: {5}</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version: {0}</value>
