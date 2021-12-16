@@ -78,7 +78,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     var chatId = update.Message.Chat.Id;
     var messageText = update.Message.Text;
 
-    if (!string.IsNullOrEmpty(botChatId))
+    if (string.IsNullOrEmpty(botChatId))
     {
         // Store it in appSettings
         botChatId = chatId.ToString();
