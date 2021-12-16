@@ -146,6 +146,7 @@ string GetLocalIpAddress()
     return localIP;
 }
 
+// https://stackoverflow.com/posts/34192554/timeline
 string GetPublicIpAddress(string serviceUrl = "https://ipinfo.io/ip")
 {
     return IPAddress.Parse(new WebClient().DownloadString(serviceUrl)).ToString();
