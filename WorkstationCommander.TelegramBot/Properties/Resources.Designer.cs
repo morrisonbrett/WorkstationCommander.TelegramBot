@@ -83,7 +83,7 @@ namespace WorkstationCommander.TelegramBot.Properties {
         ///Local IP Address: {1}
         ///Public IP Address: {2}
         ///Uptime: {3}
-        ///IdleTime: {4}
+        ///Idletime: {4}
         ///Lock Status: {5}.
         /// </summary>
         internal static string Status {
