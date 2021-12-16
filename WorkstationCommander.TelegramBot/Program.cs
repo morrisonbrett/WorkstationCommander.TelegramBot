@@ -31,6 +31,9 @@ SetupConfiguration.Setup();
 // Get the Bot key
 var botKey = SetupConfiguration.botKey;
 
+// Try and get a ChatId
+var botChatId = SetupConfiguration.botChatId;
+
 var botClient = new TelegramBotClient(botKey);
 
 using var cts = new CancellationTokenSource();
@@ -50,8 +53,11 @@ var me = await botClient.GetMeAsync();
 
 Console.WriteLine($"Start listening for @{me.Username}");
 
-// TODO Send a welcome message
-// var welcomeMessage = await botClient.SendTextMessageAsync(chatId: botClient., text: $"{me.FirstName} connected", cancellationToken: cts.Token); 
+// If we have this ID, we can send notifications. Send a welcome message.
+if (!string.IsNullOrEmpty(botChatId))
+{
+    var welcomeMessage = await botClient.SendTextMessageAsync(botChatId, $"Connected Workstation.Commander to {me.Username}", cancellationToken: cts.Token);
+}
 
 // This keeps it running
 new ManualResetEvent(false).WaitOne();
@@ -72,11 +78,19 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     var chatId = update.Message.Chat.Id;
     var messageText = update.Message.Text;
 
+    if (!string.IsNullOrEmpty(botChatId))
+    {
+        // Store it in appSettings
+        botChatId = chatId.ToString();
+        SetupConfiguration.AddOrUpdateAppSetting("TelegramBotChatId", botChatId);
+        Console.WriteLine($"Persisting ChatId: {botChatId} to appsettings.json");
+    }
+
     Console.WriteLine($"Type: {update.Type} Received: '{messageText}' message in bot {chatId}.");
 
     var messageResponse = string.Empty;
 
-    switch (messageText.ToLower())
+    switch (messageText.ToLower().Split(' ').First())
     {
         case "/help":
         {
