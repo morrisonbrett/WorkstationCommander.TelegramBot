@@ -53,7 +53,8 @@ Console.WriteLine($"Start listening for @{me.Username}");
 // TODO Send a welcome message
 // var welcomeMessage = await botClient.SendTextMessageAsync(chatId: botClient., text: $"{me.FirstName} connected", cancellationToken: cts.Token); 
 
-Console.ReadLine();
+// This keeps it running
+new ManualResetEvent(false).WaitOne();
 
 // Send cancellation request to stop bot
 cts.Cancel();
