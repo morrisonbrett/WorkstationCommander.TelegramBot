@@ -48,7 +48,7 @@ namespace WorkstationCommander.TelegramBot
             try
             {
                 var time = GetSystemUpTime();
-                var upTime = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms", time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
+                var upTime = string.Format("{0:D2}d:{1:D2}h:{2:D2}m:{3:D2}s:{4:D3}ms", time.Days, time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
 
                 return upTime;
             }
@@ -88,7 +88,7 @@ namespace WorkstationCommander.TelegramBot
             _ = GetLastInputInfo(ref lastInPut);
 
             var time = TimeSpan.FromMilliseconds(Environment.TickCount - lastInPut.dwTime);
-            var idleTime = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms", time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
+            var idleTime = string.Format("{0:D2}d:{1:D2}h:{2:D2}m:{3:D2}s:{4:D3}ms", time.Days, time.Hours, time.Minutes, time.Seconds, time.Milliseconds);
 
             return idleTime;
         }
