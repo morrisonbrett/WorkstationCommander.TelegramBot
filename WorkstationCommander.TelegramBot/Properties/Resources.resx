@@ -118,13 +118,14 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Help" xml:space="preserve">
-    <value>Workstation Commander Bot enables you to control your Windows workstation. Simply use / in this chat to see a list of commands.</value>
+    <value>📖 Workstation Commander Bot enables you to control your Windows workstation. Simply use / in this chat to see a list of commands.</value>
   </data>
   <data name="Locking" xml:space="preserve">
-    <value>Locking Workstation: {0}</value>
+    <value>🔐 Locking Workstation: {0}</value>
   </data>
   <data name="Status" xml:space="preserve">
-    <value>Workstation: {0}
+    <value>🖥
+Workstation: {0}
 Local IP Address: {1}
 Public IP Address: {2}
 Uptime: {3}
@@ -132,6 +133,6 @@ Idletime: {4}
 Lock Status: {5}</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version: {0}</value>
+    <value>🤖 Version: {0}</value>
   </data>
 </root>

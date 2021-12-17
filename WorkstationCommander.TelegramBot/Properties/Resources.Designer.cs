@@ -61,7 +61,7 @@ namespace WorkstationCommander.TelegramBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Workstation Commander Bot enables you to control your Windows workstation. Simply use / in this chat to see a list of commands..
+        ///   Looks up a localized string similar to 📖 Workstation Commander Bot enables you to control your Windows workstation. Simply use / in this chat to see a list of commands..
         /// </summary>
         internal static string Help {
             get {
@@ -70,7 +70,7 @@ namespace WorkstationCommander.TelegramBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Locking Workstation: {0}.
+        ///   Looks up a localized string similar to 🔐 Locking Workstation: {0}.
         /// </summary>
         internal static string Locking {
             get {
@@ -79,7 +79,8 @@ namespace WorkstationCommander.TelegramBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Workstation: {0}
+        ///   Looks up a localized string similar to 🖥
+        ///Workstation: {0}
         ///Local IP Address: {1}
         ///Public IP Address: {2}
         ///Uptime: {3}
@@ -93,7 +94,7 @@ namespace WorkstationCommander.TelegramBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Version: {0}.
+        ///   Looks up a localized string similar to 🤖 Version: {0}.
         /// </summary>
         internal static string Version {
             get {
