@@ -33,7 +33,9 @@ $ dotnet run
 ```
 Or, open the WorkstationCommander.TelegramBot.sln solution in Visual Studio, and build and run the solution from there.
 
-Once confirmed working, create a Task to startup at system boot in [Task Scheduler](https://www.howtogeek.com/tips/how-to-run-a-scheduled-task-without-a-command-window-appearing/).
+Once confirmed working, create a Task to startup at system boot or login in [Task Scheduler](https://www.howtogeek.com/tips/how-to-run-a-scheduled-task-without-a-command-window-appearing/).
+
+![](static/task_scheduler.gif)
 
 ## ❤️ Contributing
 
