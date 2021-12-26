@@ -17,7 +17,7 @@ WinSys.LockEventSetup();
 // List of BotCommands
 var commands = new List<BotCommand>() {
     new BotCommand { Command = "help", Description = "View summary of what the bot can do" },
-    new BotCommand { Command = "lock", Description = "Locks the workstation" },
+    new BotCommand { Command = "lock", Description = "Lock the workstation" },
     new BotCommand { Command = "status", Description = "View the workstation status" },
     new BotCommand { Command = "version", Description = "View current bot version" }
 };
