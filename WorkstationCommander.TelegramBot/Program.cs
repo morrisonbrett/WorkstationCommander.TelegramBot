@@ -6,9 +6,15 @@ using Telegram.Bot.Types.Enums;
 using WorkstationCommander.TelegramBot;
 using WorkstationCommander.TelegramBot.Properties;
 
+#pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 
+string? botChatId = null;
+TelegramBotClient? botClient = null;
+using var cts = new CancellationTokenSource();
+
 WinSys.LockEventSetup();
+WinSys.LockMessageFunc = LockMessageFuncAsync;
 
 // List of BotCommands
 var commands = new List<BotCommand>() {
@@ -28,11 +34,9 @@ SetupConfiguration.Setup();
 var botKey = SetupConfiguration.botKey;
 
 // Try and get a ChatId
-var botChatId = SetupConfiguration.botChatId;
+botChatId = SetupConfiguration.botChatId;
 
-var botClient = new TelegramBotClient(botKey);
-
-using var cts = new CancellationTokenSource();
+botClient = new TelegramBotClient(botKey);
 
 // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
 var receiverOptions = new ReceiverOptions
@@ -52,7 +56,7 @@ Console.WriteLine($"Start listening for @{me.Username}");
 // If we have this ID, we can send notifications. Send a welcome message.
 if (!string.IsNullOrEmpty(botChatId))
 {
-    var welcomeMessage = await botClient.SendTextMessageAsync(botChatId, $"Connected Workstation.Commander to {me.Username}", cancellationToken: cts.Token);
+    var welcomeMessage = await SendMessage(botChatId, $"Connected Workstation.Commander to {me.Username}", cancellationToken: cts.Token);
 }
 
 // This keeps it running
@@ -60,6 +64,22 @@ new ManualResetEvent(false).WaitOne();
 
 // Send cancellation request to stop bot
 cts.Cancel();
+
+// Callback function invoked by WinSys when the workstation is locked or unlocked
+async Task<bool> LockMessageFuncAsync(bool lockState)
+{
+    if (string.IsNullOrEmpty(botChatId))
+        return false;
+
+    _ = await SendMessage(botChatId, lockState ? string.Format(Resources.Locked, Environment.MachineName) : string.Format(Resources.Unlocked, Environment.MachineName), cancellationToken: cts.Token);
+
+    return true;
+}
+
+async Task<Message> SendMessage(ChatId chatId, string text, CancellationToken cancellationToken)
+{
+    return await botClient.SendTextMessageAsync(chatId, text, cancellationToken: cancellationToken);
+}
 
 async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
 {
@@ -122,7 +142,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     if (messageResponse.Length > 0)
     {
-        var sentMessage = await botClient.SendTextMessageAsync(chatId: chatId, text: messageResponse, cancellationToken: cancellationToken);
+        var sentMessage = await SendMessage(chatId: chatId, text: messageResponse, cancellationToken: cancellationToken);
         Console.WriteLine($"Sent Message: {messageResponse}");
     }
 }
@@ -139,4 +159,5 @@ Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, Cancell
     return Task.CompletedTask;
 }
 
+#pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
