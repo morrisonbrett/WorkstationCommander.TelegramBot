@@ -1,7 +1,11 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
+#pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CA1416 // Validate platform compatibility
 
 namespace WorkstationCommander.TelegramBot
@@ -92,7 +96,32 @@ namespace WorkstationCommander.TelegramBot
 
             return idleTime;
         }
+
+        public static string GetAssemblyVersion()
+        {
+            return Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version.ToString();
+        }
+
+        // https://stackoverflow.com/a/27376368/3782147
+        public static string GetLocalIpAddress()
+        {
+            var localIP = string.Empty;
+            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+            {
+                socket.Connect("8.8.8.8", 65530);
+                var endPoint = socket.LocalEndPoint as IPEndPoint;
+                localIP = endPoint.Address.ToString();
+            }
+            return localIP;
+        }
+
+        // https://stackoverflow.com/posts/34192554/timeline
+        public static string GetPublicIpAddress(string serviceUrl = "https://ipinfo.io/ip")
+        {
+            return IPAddress.Parse(new WebClient().DownloadString(serviceUrl)).ToString();
+        }
     }
 }
 
 #pragma warning restore CA1416 // Validate platform compatibility
+#pragma warning restore CS8604 // Possible null reference argument.

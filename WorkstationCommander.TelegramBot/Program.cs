@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -9,7 +6,6 @@ using Telegram.Bot.Types.Enums;
 using WorkstationCommander.TelegramBot;
 using WorkstationCommander.TelegramBot.Properties;
 
-#pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 
 WinSys.LockEventSetup();
@@ -23,7 +19,7 @@ var commands = new List<BotCommand>() {
 };
 
 // Get this once at startup
-var assemblyVersion = GetAssemblyVersion();
+var assemblyVersion = WinSys.GetAssemblyVersion();
 
 // Setup the configuration settings file
 SetupConfiguration.Setup();
@@ -107,7 +103,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
         case "/status":
         {
-            messageResponse = string.Format(Resources.Status, Environment.MachineName, GetLocalIpAddress(), GetPublicIpAddress(), WinSys.GetSystemUpTimeInfo(), WinSys.GetIdleTime(), WinSys.lockState ? "Locked" : "Unlocked");
+            messageResponse = string.Format(Resources.Status, Environment.MachineName, WinSys.GetLocalIpAddress(), WinSys.GetPublicIpAddress(), WinSys.GetSystemUpTimeInfo(), WinSys.GetIdleTime(), WinSys.lockState ? "Locked" : "Unlocked");
             break;
         }
 
@@ -143,29 +139,4 @@ Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, Cancell
     return Task.CompletedTask;
 }
 
-string GetAssemblyVersion()
-{
-    return Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version.ToString();
-}
-
-// https://stackoverflow.com/a/27376368/3782147
-string GetLocalIpAddress()
-{
-    var localIP = string.Empty;
-    using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-    {
-        socket.Connect("8.8.8.8", 65530);
-        var endPoint = socket.LocalEndPoint as IPEndPoint;
-        localIP = endPoint.Address.ToString();
-    }
-    return localIP;
-}
-
-// https://stackoverflow.com/posts/34192554/timeline
-string GetPublicIpAddress(string serviceUrl = "https://ipinfo.io/ip")
-{
-    return IPAddress.Parse(new WebClient().DownloadString(serviceUrl)).ToString();
-}
-
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8604 // Possible null reference argument.
