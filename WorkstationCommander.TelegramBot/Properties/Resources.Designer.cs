@@ -70,6 +70,15 @@ namespace WorkstationCommander.TelegramBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 🔒 Workstation Locked: {0}.
+        /// </summary>
+        internal static string Locked {
+            get {
+                return ResourceManager.GetString("Locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 🔐 Locking Workstation: {0}.
         /// </summary>
         internal static string Locking {
@@ -90,6 +99,15 @@ namespace WorkstationCommander.TelegramBot.Properties {
         internal static string Status {
             get {
                 return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🔓Workstation Unlocked: {0}.
+        /// </summary>
+        internal static string Unlocked {
+            get {
+                return ResourceManager.GetString("Unlocked", resourceCulture);
             }
         }
         

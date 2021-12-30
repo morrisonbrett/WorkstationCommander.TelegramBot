@@ -120,6 +120,9 @@
   <data name="Help" xml:space="preserve">
     <value>📖 Workstation Commander Bot enables you to control your Windows workstation. Simply use / in this chat to see a list of commands.</value>
   </data>
+  <data name="Locked" xml:space="preserve">
+    <value>🔒 Workstation Locked: {0}</value>
+  </data>
   <data name="Locking" xml:space="preserve">
     <value>🔐 Locking Workstation: {0}</value>
   </data>
@@ -131,6 +134,9 @@ Public IP Address: {2}
 Uptime: {3}
 Idletime: {4}
 Lock Status: {5}</value>
+  </data>
+  <data name="Unlocked" xml:space="preserve">
+    <value>🔓Workstation Unlocked: {0}</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>🤖 Version: {0}</value>
