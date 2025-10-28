@@ -1,6 +1,5 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Exceptions;
-using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using WorkstationCommander.TelegramBot;
@@ -38,18 +37,85 @@ botChatId = SetupConfiguration.botChatId;
 
 botClient = new TelegramBotClient(botKey);
 
-// StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
-var receiverOptions = new ReceiverOptions
+// Inject the bot with these command options
+await botClient.SetMyCommands(commands, null, null, cts.Token);
+
+// Set up message handler using the new event-based approach
+botClient.OnMessage += async (message, type) =>
 {
-    AllowedUpdates = { } // receive all update types
+    // Only process text messages
+    if (message.Type != MessageType.Text)
+        return;
+
+    var chatId = message.Chat.Id;
+    var messageText = message.Text;
+
+    if (string.IsNullOrEmpty(botChatId))
+    {
+        // Store it in appSettings
+        botChatId = chatId.ToString();
+        SetupConfiguration.AddOrUpdateAppSetting("TelegramBotChatId", botChatId);
+        Console.WriteLine($"Persisting ChatId: {botChatId} to appsettings.json");
+    }
+
+    Console.WriteLine($"Received: '{messageText}' message in chat {chatId}.");
+
+    var messageResponse = string.Empty;
+
+    switch (messageText.ToLower().Split(' ').First())
+    {
+        case "/help":
+            {
+                messageResponse = Resources.Help;
+                break;
+            }
+
+        case "/lock":
+            {
+                WinSys.LockWorkStation();
+                messageResponse = string.Format(Resources.Locking, Environment.MachineName);
+                break;
+            }
+
+        case "/status":
+            {
+                messageResponse = string.Format(Resources.Status, Environment.MachineName, WinSys.GetLocalIpAddress(), WinSys.GetPublicIpAddress(), WinSys.GetSystemUpTimeInfo(), WinSys.GetIdleTime(), WinSys.lockState ? "Locked" : "Unlocked");
+                break;
+            }
+
+        case "/version":
+            {
+                messageResponse = string.Format(Resources.Version, assemblyVersion);
+                break;
+            }
+
+        default:
+            {
+                break;
+            }
+    }
+
+    if (messageResponse.Length > 0)
+    {
+        await botClient.SendMessage(chatId: chatId, text: messageResponse, cancellationToken: cts.Token);
+        Console.WriteLine($"Sent Message: {messageResponse}");
+    }
 };
 
-// Inject the bot with these command options
-var commandStatus = botClient.SetMyCommandsAsync(commands, null, null, cts.Token);
+// Set up error handler
+botClient.OnError += async (exception, source) =>
+{
+    var ErrorMessage = exception switch
+    {
+        ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+        _ => exception.ToString()
+    };
 
-botClient.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, cancellationToken: cts.Token);
+    Console.WriteLine($"HandleErrorAsync() Error: {ErrorMessage}");
+    await Task.CompletedTask;
+};
 
-var me = await botClient.GetMeAsync();
+var me = await botClient.GetMe();
 
 Console.WriteLine($"Start listening for @{me.Username}");
 
@@ -78,85 +144,7 @@ async Task<bool> LockMessageFuncAsync(bool lockState)
 
 async Task<Message> SendMessage(ChatId chatId, string text, CancellationToken cancellationToken)
 {
-    return await botClient.SendTextMessageAsync(chatId, text, cancellationToken: cancellationToken);
-}
-
-async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-{
-    // Only process Message updates: https://core.telegram.org/bots/api#message
-    if (update.Type != UpdateType.Message)
-        return;
-
-    // Only process text messages
-    if (update.Message!.Type != MessageType.Text)
-        return;
-
-    var chatId = update.Message.Chat.Id;
-    var messageText = update.Message.Text;
-
-    if (string.IsNullOrEmpty(botChatId))
-    {
-        // Store it in appSettings
-        botChatId = chatId.ToString();
-        SetupConfiguration.AddOrUpdateAppSetting("TelegramBotChatId", botChatId);
-        Console.WriteLine($"Persisting ChatId: {botChatId} to appsettings.json");
-    }
-
-    Console.WriteLine($"Type: {update.Type} Received: '{messageText}' message in bot {chatId}.");
-
-    var messageResponse = string.Empty;
-
-    switch (messageText.ToLower().Split(' ').First())
-    {
-        case "/help":
-        {
-            messageResponse = Resources.Help;
-            break;
-        }
-
-        case "/lock":
-        {
-            WinSys.LockWorkStation();
-            messageResponse = string.Format(Resources.Locking, Environment.MachineName);
-            break;
-        }
-
-        case "/status":
-        {
-            messageResponse = string.Format(Resources.Status, Environment.MachineName, WinSys.GetLocalIpAddress(), WinSys.GetPublicIpAddress(), WinSys.GetSystemUpTimeInfo(), WinSys.GetIdleTime(), WinSys.lockState ? "Locked" : "Unlocked");
-            break;
-        }
-
-        case "/version":
-        {
-            // TODO Properly implement version updating on build. Also, check against version on GitHub to determine if current version is outdated.
-            messageResponse = string.Format(Resources.Version, assemblyVersion);
-            break;
-        }
-
-        default:
-        {
-            break;
-        }
-    }
-
-    if (messageResponse.Length > 0)
-    {
-        var sentMessage = await SendMessage(chatId: chatId, text: messageResponse, cancellationToken: cancellationToken);
-        Console.WriteLine($"Sent Message: {messageResponse}");
-    }
-}
-
-Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
-{
-    var ErrorMessage = exception switch
-    {
-        ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}", _ => exception.ToString()
-    };
-
-    Console.WriteLine($"HandleErrorAsync() Error: {ErrorMessage}");
-
-    return Task.CompletedTask;
+    return await botClient.SendMessage(chatId, text, cancellationToken: cancellationToken);
 }
 
 #pragma warning restore CS8604 // Possible null reference argument.
